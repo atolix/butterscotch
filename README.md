@@ -51,11 +51,19 @@ end
 run app
 ```
 
-Run with:
+Run with butterscotch CLI:
 
 ```bash
-rackup
+# Using a config.ru
+butterscotch -c config.ru -p 9292 -o 127.0.0.1
+
+# Or pointing to a Ruby file that sets Butterscotch::CLI.app
+butterscotch -f path/to/app.rb
 ```
+
+Notes:
+- If you prefer rackup, `rackup` also works with the same config.ru.
+- Response headers follow Rack 3 rules and are lower-case (e.g. `content-type`).
 
 ### Routing
 - Methods: `get`, `post`, `put`, `patch`, `delete`, `options`, `head`, `trace`, `any`
@@ -104,6 +112,16 @@ app.get "/h", HelloHandler.new
 app.post "/ok", OkHandler.new
 app.put "/json", JsonHandler      # class is instantiated per request
 ```
+
+### CLI Options
+- `-c, --config FILE`: Load a Rack `config.ru`
+- `-f, --appfile FILE`: Load a Ruby file that sets `Butterscotch::CLI.app`
+- `-o, --host HOST`: Bind host (default: `127.0.0.1`)
+- `-p, --port PORT`: Bind port (default: `9292`)
+- `-e, --env ENV`: Rack environment (default: `development`)
+- `-s, --server NAME`: Rack server (default: `webrick` if available)
+- `-v, --version`: Print version
+- `-h, --help`: Show help
 
 ### Error Handling
 - `app.error(ExceptionClass = StandardError) { |error, context| ... }`: Register per-exception handler
