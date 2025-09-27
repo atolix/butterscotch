@@ -27,7 +27,7 @@ module Butterscotch
         next unless match_data
 
         params = {}
-        route.keys.each do |key|
+        route.each_key do |key|
           params[key] = match_data[key] if match_data.names.include?(key)
         end
         return [route, params]

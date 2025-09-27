@@ -23,7 +23,7 @@ module Butterscotch
         context = Context.new(env, params)
         begin
           result = route.handler.arity == 1 ? route.handler.call(context) : route.handler.call
-          response = normalize_result(result)
+          response = Response.normalize(result)
         rescue Halt => e
           response = [e.status, e.headers, e.body]
         rescue StandardError => e
@@ -34,7 +34,7 @@ module Butterscotch
         response = respond_not_found(env)
       end
 
-      return to_head_response(response) if method == 'HEAD'
+      return Response.to_head_response(response) if method == 'HEAD'
 
       response
     end
@@ -110,29 +110,12 @@ module Butterscotch
 
     private
 
-    def default_not_found
-      [404, { 'Content-Type' => 'text/plain; charset=utf-8' }, ['Not Found']]
-    end
-
-    def normalize_result(res)
-      # Allow handlers to return a Rack response or a simple String
-      if res.is_a?(Array) && res.size == 3
-        res
-      elsif res.is_a?(String)
-        [200, { 'Content-Type' => 'text/plain; charset=utf-8' }, [res]]
-      elsif res.respond_to?(:to_s)
-        [200, { 'Content-Type' => 'text/plain; charset=utf-8' }, [res.to_s]]
-      else
-        [204, {}, []]
-      end
-    end
-
     def respond_not_found(env)
       if @not_found_handler
         context = Context.new(env, {})
-        return normalize_result(call_block(@not_found_handler, nil, context))
+        return Response.normalize(call_block(@not_found_handler, nil, context))
       end
-      default_not_found
+      Response.not_found
     end
 
     def handle_error(error, env, params)
@@ -140,7 +123,7 @@ module Butterscotch
       return default_error(error) unless handler
 
       context = Context.new(env, params)
-      normalize_result(call_block(handler, error, context))
+      Response.normalize(call_block(handler, error, context))
     end
 
     def find_error_handler(error)
@@ -160,33 +143,7 @@ module Butterscotch
     end
 
     def default_error(_error)
-      [500, { 'Content-Type' => 'text/plain; charset=utf-8' }, ['Internal Server Error']]
-    end
-
-    def to_head_response(response)
-      status, headers, body = response
-      headers = headers.dup
-      unless headers.key?('Content-Length')
-        length = body_length(body)
-        headers['Content-Length'] = length.to_s if length
-      end
-      [status, headers, []]
-    end
-
-    def body_length(body)
-      return nil unless body.respond_to?(:each)
-
-      total = 0
-      begin
-        body.each do |chunk|
-          next unless chunk.is_a?(String)
-
-          total += chunk.bytesize
-        end
-      rescue StandardError
-        return nil
-      end
-      total
+      Response.error
     end
   end
 end
