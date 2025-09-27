@@ -22,7 +22,7 @@ gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
 
 ## Usage
 
-Butterscotch provides a tiny Rack-compatible router with an API.
+Butterscotch provides a tiny Rack-compatible router with a simple, expressive API.
 
 Example `config.ru`:
 
@@ -30,19 +30,21 @@ Example `config.ru`:
 require 'bundler/setup'
 require 'butterscotch'
 
-app = Butterscotch::App.new
+# Either works
+# app = Butterscotch::App.new
+app = Butterscotch.new
 
-app.get "/" do |c|
-  c.text "hello"
+app.get "/" do |context|
+  context.text "hello"
 end
 
-app.get "/hello/:name" do |c|
-  c.text "Hello, #{c.params["name"]}!"
+app.get "/hello/:name" do |context|
+  context.text "Hello, #{context.params["name"]}!"
 end
 
-api = app.group "/api" do |g|
-  g.get "/ping" do |c|
-    c.json ok: true, ip: c.ip
+app.group "/api" do |g|
+  g.get "/ping" do |context|
+    context.json ok: true, ip: context.ip
   end
 end
 
@@ -54,6 +56,33 @@ Run with:
 ```bash
 rackup
 ```
+
+### Routing
+- **Methods:** `get`, `post`, `put`, `patch`, `delete`, `options`, `head`, `trace`, `any`
+- **Params:** `:id` like `/users/:id`, splat `*` like `/files/*`
+- **Groups:** `app.group "/api" { |g| g.get "/ping" { ... } }` (nestable)
+- **HEAD:** Uses matching `GET` route, returns empty body and sets `Content-Length` when possible.
+
+### Context API
+- `req`: Rack request object (`Rack::Request`)
+- `params`: Path parameters hash
+- `ip`: Client IP shortcut
+- `status(code)`: Set response status (default 200)
+- `header(key, value)`: Set a response header; `header(key)` to get
+- `headers(hash)`: Merge multiple headers; returns current headers
+- `text(body, status: nil, headers: {})`: Return plain text
+- `html(body, status: nil, headers: {})`: Return HTML
+- `json(obj = nil, status: nil, headers: {}, **kw)`: Return JSON
+- `redirect(location, status: 302, headers: {})`: Redirect helper
+- `halt(code = nil, body = nil, headers: {})`: Immediately stop and return given response
+- `request_header(name)`: Read request header (e.g. `HTTP_X_REQUEST_ID`)
+- `set_header(key, value)`: Alias of `header` (does not return Rack response)
+
+### Error Handling
+- `app.error(ExceptionClass = StandardError) { |error, context| ... }`: Register per-exception handler
+- `app.not_found { |context| ... }`: Custom 404 handler
+- On unhandled errors, returns `500 Internal Server Error` by default
+
 
 ## Development
 
