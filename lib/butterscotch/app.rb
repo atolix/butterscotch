@@ -22,7 +22,14 @@ module Butterscotch
         route, params = found
         context = Context.new(env, params)
         begin
-          result = route.handler.arity == 1 ? route.handler.call(context) : route.handler.call
+          handler = route.handler
+          handler = handler.new if handler.is_a?(Class)
+          call_arity = begin
+            handler.method(:call).arity
+          rescue NameError
+            0
+          end
+          result = call_arity.zero? ? handler.call : handler.call(context)
           response = Response.normalize(result)
         rescue Halt => e
           response = [e.status, e.headers, e.body]
@@ -40,8 +47,8 @@ module Butterscotch
     end
 
     %i[get post put patch delete options head trace].each do |method_name|
-      define_method(method_name) do |path, &block|
-        @router.add(method_name, path, &block)
+      define_method(method_name) do |path, handler = nil, &block|
+        @router.add(method_name, path, handler, &block)
       end
     end
 
@@ -79,9 +86,9 @@ module Butterscotch
       end
 
       %i[get post put patch delete options head trace any].each do |http_method|
-        define_method(http_method) do |path, &block|
+        define_method(http_method) do |path, handler = nil, &block|
           full = join(@prefix, path)
-          @app.public_send(http_method, full, &block)
+          @app.public_send(http_method, full, handler, &block)
         end
       end
 

@@ -10,12 +10,13 @@ module Butterscotch
       @routes = Hash.new { |h, k| h[k] = [] }
     end
 
-    def add(method, path, &handler)
-      raise ArgumentError, 'handler block required' unless handler
+    def add(method, path, handler = nil, &block)
+      callable = handler || block
+      raise ArgumentError, 'handler required' unless callable
 
       method = normalize_method(method)
       pattern, keys = compile(path)
-      @routes[method] << Route.new(method, pattern, keys, handler)
+      @routes[method] << Route.new(method, pattern, keys, callable)
       self
     end
 
@@ -27,7 +28,7 @@ module Butterscotch
         next unless match_data
 
         params = {}
-        route.each_key do |key|
+        route.keys.each do |key| # rubocop:disable Style/HashEachMethods
           params[key] = match_data[key] if match_data.names.include?(key)
         end
         return [route, params]
