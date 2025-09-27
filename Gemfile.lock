@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     butterscotch (0.1.0)
-      rack (>= 2.2, < 4.0)
+      rack (>= 3.0)
 
 GEM
   remote: https://rubygems.org/
