@@ -42,7 +42,7 @@ module Butterscotch
 
     # Response headers bulk merge or accessor
     def headers(hash = nil)
-      @resp_headers.merge!(hash.each_with_object({}) { |(k, v), acc| acc[k.to_s.downcase] = v }) if hash
+      @resp_headers.merge!(hash.transform_keys { |k| k.to_s.downcase }) if hash
       @resp_headers
     end
 
@@ -53,13 +53,17 @@ module Butterscotch
 
     def text(body, status: nil, headers: {})
       effective_status = status || @status
-      effective_headers = { 'content-type' => 'text/plain; charset=utf-8' }.merge(@resp_headers).merge(downcase_keys(headers))
+      effective_headers = {
+        'content-type' => 'text/plain; charset=utf-8'
+      }.merge(@resp_headers).merge(downcase_keys(headers))
       [effective_status, effective_headers, [body.to_s]]
     end
 
     def html(body, status: nil, headers: {})
       effective_status = status || @status
-      effective_headers = { 'content-type' => 'text/html; charset=utf-8' }.merge(@resp_headers).merge(downcase_keys(headers))
+      effective_headers = {
+        'content-type' => 'text/html; charset=utf-8'
+      }.merge(@resp_headers).merge(downcase_keys(headers))
       [effective_status, effective_headers, [body.to_s]]
     end
 
@@ -70,7 +74,9 @@ module Butterscotch
                   obj
                 end
       effective_status = status || @status
-      effective_headers = { 'content-type' => 'application/json; charset=utf-8' }.merge(@resp_headers).merge(downcase_keys(headers))
+      effective_headers = {
+        'content-type' => 'application/json; charset=utf-8'
+      }.merge(@resp_headers).merge(downcase_keys(headers))
       [effective_status, effective_headers, [JSON.generate(payload)]]
     end
 
@@ -92,7 +98,7 @@ module Butterscotch
     private
 
     def downcase_keys(hash)
-      hash.each_with_object({}) { |(k, v), acc| acc[k.to_s.downcase] = v }
+      hash.transform_keys { |k| k.to_s.downcase }
     end
   end
 end

@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+begin
+  require 'bundler/setup'
+rescue LoadError
+  # ignore
+end
+
+require 'butterscotch'
+require 'butterscotch/cli'
+
+Butterscotch::CLI.start(ARGV)
