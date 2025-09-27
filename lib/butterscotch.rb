@@ -4,6 +4,7 @@ require_relative 'butterscotch/version'
 require_relative 'butterscotch/context'
 require_relative 'butterscotch/router'
 require_relative 'butterscotch/app'
+require_relative 'butterscotch/halt'
 
 module Butterscotch
   class Error < StandardError; end

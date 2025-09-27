@@ -24,6 +24,8 @@ module Butterscotch
         begin
           result = route.handler.arity == 1 ? route.handler.call(context) : route.handler.call
           response = normalize_result(result)
+        rescue Halt => e
+          response = [e.status, e.headers, e.body]
         rescue StandardError => e
           env['butterscotch.error'] = e
           response = handle_error(e, env, params)
@@ -61,7 +63,7 @@ module Butterscotch
       self
     end
 
-    # Set a custom 404 handler: app.not_found { |ctx| ... }
+    # Set a custom 404 handler: app.not_found { |context| ... }
     def not_found(&block)
       raise ArgumentError, 'block required' unless block_given?
 
@@ -127,8 +129,8 @@ module Butterscotch
 
     def respond_not_found(env)
       if @not_found_handler
-        ctx = Context.new(env, {})
-        return normalize_result(call_block(@not_found_handler, nil, ctx))
+        context = Context.new(env, {})
+        return normalize_result(call_block(@not_found_handler, nil, context))
       end
       default_not_found
     end
