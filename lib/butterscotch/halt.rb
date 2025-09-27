@@ -9,7 +9,7 @@ module Butterscotch
     def initialize(status:, headers: {}, body: [])
       super("halt: #{status}")
       @status = Integer(status)
-      @headers = headers
+      @headers = headers.each_with_object({}) { |(k, v), acc| acc[k.to_s.downcase] = v }
       @body = normalize_body(body)
     end
 
