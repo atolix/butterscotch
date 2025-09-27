@@ -55,4 +55,16 @@ class TestHttpMethods < Minitest::Test
     assert_equal 200, res.status
     assert_equal 'deleted', res.body
   end
+
+  def test_head_uses_get_handler_and_strips_body
+    app = Butterscotch::App.new
+    app.get '/head' do |context|
+      context.text 'hello'
+    end
+    res = rack(app).head('/head')
+    assert_equal 200, res.status
+    assert_equal '', res.body
+    assert_equal 'text/plain; charset=utf-8', res['Content-Type']
+    assert_equal '5', res['Content-Length']
+  end
 end

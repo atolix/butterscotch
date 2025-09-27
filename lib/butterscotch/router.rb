@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 module Butterscotch
-  Route = Struct.new(:method, :pattern, :keys, :handler)
+  # Internal route descriptor used by Router
+  Route = Struct.new(:method, :pattern, :keys, :handler) # rubocop:disable Lint/StructNewOverride
 
+  # Minimal HTTP router with path params and basic matching.
   class Router
     HTTP_METHODS = %w[GET POST PUT PATCH DELETE HEAD OPTIONS TRACE].freeze
 
@@ -10,15 +12,17 @@ module Butterscotch
       @routes = Hash.new { |h, k| h[k] = [] }
     end
 
-    def add(method, path, &handler)
-      raise ArgumentError, 'handler block required' unless handler
+    def add(method, path, handler = nil, &block)
+      callable = handler || block
+      raise ArgumentError, 'handler required' unless callable
 
       method = normalize_method(method)
       pattern, keys = compile(path)
-      @routes[method] << Route.new(method, pattern, keys, handler)
+      @routes[method] << Route.new(method, pattern, keys, callable)
       self
     end
 
+    # rubocop:disable Metrics/MethodLength
     def match(method, path)
       method = normalize_method(method)
       candidates = @routes[method]
@@ -27,13 +31,14 @@ module Butterscotch
         next unless match_data
 
         params = {}
-        route.keys.each do |key|
+        route.keys.each do |key| # rubocop:disable Style/HashEachMethods
           params[key] = match_data[key] if match_data.names.include?(key)
         end
         return [route, params]
       end
       nil
     end
+    # rubocop:enable Metrics/MethodLength
 
     private
 
@@ -48,6 +53,7 @@ module Butterscotch
     #  - :name   => single segment [^/]+
     #  - *splat  => greedy match .*
     #  - trailing slash tolerance
+    # rubocop:disable Metrics/MethodLength
     def compile(path)
       raise ArgumentError, 'path must start with /' unless path.start_with?('/')
 
@@ -70,5 +76,6 @@ module Butterscotch
 
       [%r{^#{pattern}/?$}, keys]
     end
+    # rubocop:enable Metrics/MethodLength
   end
 end

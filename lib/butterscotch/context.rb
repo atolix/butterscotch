@@ -4,6 +4,8 @@ require 'json'
 require 'rack'
 
 module Butterscotch
+  # Per-request context: wraps Rack::Request and route params,
+  # and provides helpers to build responses.
   class Context
     attr_reader :req, :params
 
@@ -11,38 +13,80 @@ module Butterscotch
       @env = env
       @req = Rack::Request.new(env)
       @params = params
+      @status = 200
+      @resp_headers = {}
     end
 
     def ip
       @req.ip
     end
 
-    def header(name)
+    # Request header getter
+    def request_header(name)
       @req.get_header(name)
     end
 
+    # Response status getter/setter
+    def status(code = nil)
+      @status = Integer(code) if code
+      @status
+    end
+
+    # Response header getter/setter
+    def header(key, value = nil)
+      return @resp_headers[key] if value.nil?
+
+      @resp_headers[key] = value
+      self
+    end
+
+    # Response headers bulk merge or accessor
+    def headers(hash = nil)
+      @resp_headers.merge!(hash) if hash
+      @resp_headers
+    end
+
+    # Back-compat method name; now just sets a header
     def set_header(key, value)
-      [200, { key => value }, []]
+      header(key, value)
     end
 
-    def text(body, status: 200, headers: {})
-      headers = { 'Content-Type' => 'text/plain; charset=utf-8' }.merge(headers)
-      [status, headers, [body.to_s]]
+    def text(body, status: nil, headers: {})
+      effective_status = status || @status
+      effective_headers = { 'Content-Type' => 'text/plain; charset=utf-8' }.merge(@resp_headers).merge(headers)
+      [effective_status, effective_headers, [body.to_s]]
     end
 
-    def html(body, status: 200, headers: {})
-      headers = { 'Content-Type' => 'text/html; charset=utf-8' }.merge(headers)
-      [status, headers, [body.to_s]]
+    def html(body, status: nil, headers: {})
+      effective_status = status || @status
+      effective_headers = { 'Content-Type' => 'text/html; charset=utf-8' }.merge(@resp_headers).merge(headers)
+      [effective_status, effective_headers, [body.to_s]]
     end
 
-    def json(obj = nil, status: 200, headers: {}, **keyword)
+    def json(obj = nil, status: nil, headers: {}, **keyword)
       payload = if obj.nil?
                   keyword.empty? ? {} : keyword
                 else
                   obj
                 end
-      headers = { 'Content-Type' => 'application/json; charset=utf-8' }.merge(headers)
-      [status, headers, [JSON.generate(payload)]]
+      effective_status = status || @status
+      effective_headers = { 'Content-Type' => 'application/json; charset=utf-8' }.merge(@resp_headers).merge(headers)
+      [effective_status, effective_headers, [JSON.generate(payload)]]
+    end
+
+    # Redirect helper (defaults to 302)
+    def redirect(location, status: 302, headers: {})
+      @status = Integer(status)
+      header('Location', location)
+      @resp_headers.merge!(headers)
+      [@status, @resp_headers.dup, []]
+    end
+
+    # Halt immediately with given status/body/headers
+    def halt(code = nil, body = nil, headers: {})
+      final_status = Integer(code || @status)
+      merged_headers = @resp_headers.merge(headers)
+      raise Halt.new(status: final_status, headers: merged_headers, body: body)
     end
   end
 end

@@ -3,6 +3,8 @@
 require 'rack'
 
 module Butterscotch
+  # Rack-compatible application that wires the router,
+  # runs handlers, and applies error/HEAD handling.
   class App
     attr_reader :router
 
@@ -13,28 +15,44 @@ module Butterscotch
     end
 
     # Rack interface
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def call(env)
       request = Rack::Request.new(env)
       method = request.request_method
       path = request.path_info
+      response = nil
       if (found = @router.match(method, path))
         route, params = found
         context = Context.new(env, params)
         begin
-          result = route.handler.arity == 1 ? route.handler.call(context) : route.handler.call
-          return normalize_result(result)
-        rescue => error
-          env['butterscotch.error'] = error
-          return handle_error(error, env, params)
+          handler = route.handler
+          handler = handler.new if handler.is_a?(Class)
+          call_arity = begin
+            handler.method(:call).arity
+          rescue NameError
+            0
+          end
+          result = call_arity.zero? ? handler.call : handler.call(context)
+          response = Response.normalize(result)
+        rescue Halt => e
+          response = [e.status, e.headers, e.body]
+        rescue StandardError => e
+          env['butterscotch.error'] = e
+          response = handle_error(e, env, params)
         end
+      else
+        response = respond_not_found(env)
       end
 
-      respond_not_found(env)
+      return Response.to_head_response(response) if method == 'HEAD'
+
+      response
     end
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     %i[get post put patch delete options head trace].each do |method_name|
-      define_method(method_name) do |path, &block|
-        @router.add(method_name, path, &block)
+      define_method(method_name) do |path, handler = nil, &block|
+        @router.add(method_name, path, handler, &block)
       end
     end
 
@@ -51,13 +69,15 @@ module Butterscotch
     # Register an error handler for a specific exception class (or StandardError by default)
     def error(klass = StandardError, &block)
       raise ArgumentError, 'error handler block required' unless block
+
       @error_handlers[klass] = block
       self
     end
 
-    # Set a custom 404 handler: app.not_found { |ctx| ... }
+    # Set a custom 404 handler: app.not_found { |context| ... }
     def not_found(&block)
       raise ArgumentError, 'block required' unless block_given?
+
       @not_found_handler = block
       self
     end
@@ -70,9 +90,9 @@ module Butterscotch
       end
 
       %i[get post put patch delete options head trace any].each do |http_method|
-        define_method(http_method) do |path, &block|
+        define_method(http_method) do |path, handler = nil, &block|
           full = join(@prefix, path)
-          @app.public_send(http_method, full, &block)
+          @app.public_send(http_method, full, handler, &block)
         end
       end
 
@@ -101,36 +121,20 @@ module Butterscotch
 
     private
 
-    def default_not_found
-      [404, { 'Content-Type' => 'text/plain; charset=utf-8' }, ['Not Found']]
-    end
-
-    def normalize_result(res)
-      # Allow handlers to return a Rack response or a simple String
-      if res.is_a?(Array) && res.size == 3
-        res
-      elsif res.is_a?(String)
-        [200, { 'Content-Type' => 'text/plain; charset=utf-8' }, [res]]
-      elsif res.respond_to?(:to_s)
-        [200, { 'Content-Type' => 'text/plain; charset=utf-8' }, [res.to_s]]
-      else
-        [204, {}, []]
-      end
-    end
-
     def respond_not_found(env)
       if @not_found_handler
-        ctx = Context.new(env, {})
-        return normalize_result(call_block(@not_found_handler, nil, ctx))
+        context = Context.new(env, {})
+        return Response.normalize(call_block(@not_found_handler, nil, context))
       end
-      default_not_found
+      Response.not_found
     end
 
     def handle_error(error, env, params)
       handler = find_error_handler(error)
       return default_error(error) unless handler
+
       context = Context.new(env, params)
-      normalize_result(call_block(handler, error, context))
+      Response.normalize(call_block(handler, error, context))
     end
 
     def find_error_handler(error)
@@ -150,7 +154,7 @@ module Butterscotch
     end
 
     def default_error(_error)
-      [500, { 'Content-Type' => 'text/plain; charset=utf-8' }, ['Internal Server Error']]
+      Response.error
     end
   end
 end
