@@ -42,8 +42,8 @@ app.get "/hello/:name" do |context|
   context.text "Hello, #{context.params["name"]}!"
 end
 
-app.group "/api" do |g|
-  g.get "/ping" do |context|
+app.group "/api" do |group|
+  group.get "/ping" do |context|
     context.json ok: true, ip: context.ip
   end
 end
@@ -58,15 +58,15 @@ rackup
 ```
 
 ### Routing
-- **Methods:** `get`, `post`, `put`, `patch`, `delete`, `options`, `head`, `trace`, `any`
-- **Params:** `:id` like `/users/:id`, splat `*` like `/files/*`
-- **Groups:** `app.group "/api" { |g| g.get "/ping" { ... } }` (nestable)
-- **HEAD:** Uses matching `GET` route, returns empty body and sets `Content-Length` when possible.
+- Methods: `get`, `post`, `put`, `patch`, `delete`, `options`, `head`, `trace`, `any`
+- Params: `:id` like `/users/:id`, splat `*` like `/files/*`
+- Groups: `app.group "/api" { |group| group.get "/ping" { ... } }` (nestable)
+- HEAD: Uses matching `GET` route, returns empty body and sets `Content-Length` when possible.
 
 ### Context API
 - `req`: Rack request object (`Rack::Request`)
 - `params`: Path parameters hash
-- `ip`: Client IP shortcut
+- `ip`: Client IP
 - `status(code)`: Set response status (default 200)
 - `header(key, value)`: Set a response header; `header(key)` to get
 - `headers(hash)`: Merge multiple headers; returns current headers
@@ -78,10 +78,37 @@ rackup
 - `request_header(name)`: Read request header (e.g. `HTTP_X_REQUEST_ID`)
 - `set_header(key, value)`: Alias of `header` (does not return Rack response)
 
+### Handlers
+Besides blocks, you can pass handler objects or classes that implement `#call`.
+
+```ruby
+class HelloHandler
+  def call(context)
+    context.text "hi"
+  end
+end
+
+class OkHandler
+  def call
+    "ok"
+  end
+end
+
+class JsonHandler
+  def call(context)
+    context.json ok: true
+  end
+end
+
+app.get "/h", HelloHandler.new
+app.post "/ok", OkHandler.new
+app.put "/json", JsonHandler      # class is instantiated per request
+```
+
 ### Error Handling
 - `app.error(ExceptionClass = StandardError) { |error, context| ... }`: Register per-exception handler
 - `app.not_found { |context| ... }`: Custom 404 handler
-- On unhandled errors, returns `500 Internal Server Error` by default
+- Unhandled errors return `500 Internal Server Error` by default
 
 
 ## Development
