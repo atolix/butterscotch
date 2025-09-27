@@ -7,6 +7,7 @@ require_relative 'butterscotch/app'
 
 module Butterscotch
   class Error < StandardError; end
+
   # Convenience constructor: Butterscotch.new => Butterscotch::App
   def self.new
     App.new
