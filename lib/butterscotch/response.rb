@@ -40,6 +40,7 @@ module Butterscotch
 
     def canonical_headers(headers)
       return {} if headers.nil?
+
       newh = {}
       headers.each { |k, v| newh[k.to_s.downcase] = v }
       newh

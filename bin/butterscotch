@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Dev wrapper to run the gem's CLI from the workspace
+load File.expand_path('../exe/butterscotch', __dir__)
