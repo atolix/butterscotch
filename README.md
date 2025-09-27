@@ -22,7 +22,38 @@ gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
 
 ## Usage
 
-TODO: Write usage instructions here
+Butterscotch provides a tiny Rack-compatible router with an API.
+
+Example `config.ru`:
+
+```ruby
+require 'bundler/setup'
+require 'butterscotch'
+
+app = Butterscotch::App.new
+
+app.get "/" do |c|
+  c.text "hello"
+end
+
+app.get "/hello/:name" do |c|
+  c.text "Hello, #{c.params["name"]}!"
+end
+
+api = app.group "/api" do |g|
+  g.get "/ping" do |c|
+    c.json ok: true, ip: c.ip
+  end
+end
+
+run app
+```
+
+Run with:
+
+```bash
+rackup
+```
 
 ## Development
 
