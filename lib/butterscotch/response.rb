@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Butterscotch
+  # Response helpers for normalizing handler return values,
+  # building common responses, and adapting to HEAD.
   module Response
     module_function
 
@@ -35,6 +37,7 @@ module Butterscotch
       [status, headers, []]
     end
 
+    # rubocop:disable Metrics/MethodLength
     def body_length(body)
       return nil unless body.respond_to?(:each)
 
@@ -50,5 +53,6 @@ module Butterscotch
       end
       total
     end
+    # rubocop:enable Metrics/MethodLength
   end
 end

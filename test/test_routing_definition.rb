@@ -38,7 +38,7 @@ class TestRoutingDefinition < Minitest::Test
     assert_equal 'pong', res.body
   end
 
-  def test_not_found_returns_404
+  def test_not_found_returns_404 # rubocop:disable Naming/VariableNumber
     app = Butterscotch::App.new
     res = rack(app).get('/missing')
     assert_equal 404, res.status

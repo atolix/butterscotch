@@ -4,6 +4,8 @@ require 'json'
 require 'rack'
 
 module Butterscotch
+  # Per-request context: wraps Rack::Request and route params,
+  # and provides helpers to build responses.
   class Context
     attr_reader :req, :params
 

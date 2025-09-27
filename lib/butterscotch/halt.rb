@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Butterscotch
+  # Control-flow exception used to stop processing and
+  # immediately return a specific Rack response.
   class Halt < StandardError
     attr_reader :status, :headers, :body
 
