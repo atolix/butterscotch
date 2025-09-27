@@ -34,15 +34,15 @@ module Butterscotch
 
     # Response header getter/setter
     def header(key, value = nil)
-      return @resp_headers[key] if value.nil?
+      return @resp_headers[key.to_s.downcase] if value.nil?
 
-      @resp_headers[key] = value
+      @resp_headers[key.to_s.downcase] = value
       self
     end
 
     # Response headers bulk merge or accessor
     def headers(hash = nil)
-      @resp_headers.merge!(hash) if hash
+      @resp_headers.merge!(hash.each_with_object({}) { |(k, v), acc| acc[k.to_s.downcase] = v }) if hash
       @resp_headers
     end
 
@@ -53,13 +53,13 @@ module Butterscotch
 
     def text(body, status: nil, headers: {})
       effective_status = status || @status
-      effective_headers = { 'Content-Type' => 'text/plain; charset=utf-8' }.merge(@resp_headers).merge(headers)
+      effective_headers = { 'content-type' => 'text/plain; charset=utf-8' }.merge(@resp_headers).merge(downcase_keys(headers))
       [effective_status, effective_headers, [body.to_s]]
     end
 
     def html(body, status: nil, headers: {})
       effective_status = status || @status
-      effective_headers = { 'Content-Type' => 'text/html; charset=utf-8' }.merge(@resp_headers).merge(headers)
+      effective_headers = { 'content-type' => 'text/html; charset=utf-8' }.merge(@resp_headers).merge(downcase_keys(headers))
       [effective_status, effective_headers, [body.to_s]]
     end
 
@@ -70,23 +70,29 @@ module Butterscotch
                   obj
                 end
       effective_status = status || @status
-      effective_headers = { 'Content-Type' => 'application/json; charset=utf-8' }.merge(@resp_headers).merge(headers)
+      effective_headers = { 'content-type' => 'application/json; charset=utf-8' }.merge(@resp_headers).merge(downcase_keys(headers))
       [effective_status, effective_headers, [JSON.generate(payload)]]
     end
 
     # Redirect helper (defaults to 302)
     def redirect(location, status: 302, headers: {})
       @status = Integer(status)
-      header('Location', location)
-      @resp_headers.merge!(headers)
+      header('location', location)
+      @resp_headers.merge!(downcase_keys(headers))
       [@status, @resp_headers.dup, []]
     end
 
     # Halt immediately with given status/body/headers
     def halt(code = nil, body = nil, headers: {})
       final_status = Integer(code || @status)
-      merged_headers = @resp_headers.merge(headers)
+      merged_headers = @resp_headers.merge(downcase_keys(headers))
       raise Halt.new(status: final_status, headers: merged_headers, body: body)
+    end
+
+    private
+
+    def downcase_keys(hash)
+      hash.each_with_object({}) { |(k, v), acc| acc[k.to_s.downcase] = v }
     end
   end
 end

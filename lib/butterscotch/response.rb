@@ -9,32 +9,40 @@ module Butterscotch
     def normalize(result)
       # Allow handlers to return a Rack response or a simple String
       if result.is_a?(Array) && result.size == 3
-        result
+        status, headers, body = result
+        [status, canonical_headers(headers), body]
       elsif result.is_a?(String)
-        [200, { 'Content-Type' => 'text/plain; charset=utf-8' }, [result]]
+        [200, { 'content-type' => 'text/plain; charset=utf-8' }, [result]]
       elsif result.respond_to?(:to_s)
-        [200, { 'Content-Type' => 'text/plain; charset=utf-8' }, [result.to_s]]
+        [200, { 'content-type' => 'text/plain; charset=utf-8' }, [result.to_s]]
       else
         [204, {}, []]
       end
     end
 
     def not_found
-      [404, { 'Content-Type' => 'text/plain; charset=utf-8' }, ['Not Found']]
+      [404, { 'content-type' => 'text/plain; charset=utf-8' }, ['Not Found']]
     end
 
     def error
-      [500, { 'Content-Type' => 'text/plain; charset=utf-8' }, ['Internal Server Error']]
+      [500, { 'content-type' => 'text/plain; charset=utf-8' }, ['Internal Server Error']]
     end
 
     def to_head_response(response)
       status, headers, body = response
-      headers = headers.dup
-      unless headers.key?('Content-Length')
+      headers = canonical_headers(headers).dup
+      unless headers.key?('content-length') || headers.key?('Content-Length')
         length = body_length(body)
-        headers['Content-Length'] = length.to_s if length
+        headers['content-length'] = length.to_s if length
       end
       [status, headers, []]
+    end
+
+    def canonical_headers(headers)
+      return {} if headers.nil?
+      newh = {}
+      headers.each { |k, v| newh[k.to_s.downcase] = v }
+      newh
     end
 
     # rubocop:disable Metrics/MethodLength
