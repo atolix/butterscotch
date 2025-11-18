@@ -51,14 +51,14 @@ end
 run app
 ```
 
-Run with butterscotch CLI:
+Run with butterscotch CLI (Bundler ensures rackup/webrick are available):
 
 ```bash
 # Using a config.ru
-butterscotch -c config.ru -p 9292 -o 127.0.0.1
+bundle exec butterscotch -c config.ru -p 9292 -o 127.0.0.1
 
 # Or pointing to a Ruby file that sets Butterscotch::CLI.app
-butterscotch -f path/to/app.rb
+bundle exec butterscotch -f path/to/app.rb
 ```
 
 Notes:

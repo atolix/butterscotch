@@ -3,13 +3,18 @@ PATH
   specs:
     butterscotch (0.1.0)
       rack (>= 3.0)
+      rackup (>= 2.1)
+      webrick (>= 1.8)
 
 GEM
   remote: https://rubygems.org/
   specs:
     minitest (5.25.5)
     rack (3.2.1)
+    rackup (2.2.1)
+      rack (>= 3)
     rake (13.3.0)
+    webrick (1.9.1)
 
 PLATFORMS
   arm64-darwin-24
