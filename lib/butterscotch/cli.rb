@@ -68,8 +68,8 @@ module Butterscotch
     end
 
     def self.resolve_app(options)
-      return resolve_from_config(options[:config]) if options[:config] || File.exist?('config.ru')
-      return resolve_from_appfile(options[:appfile]) if options[:appfile]
+      return resolve_from_main('main.rb') if File.exist?('main.rb')
+      return resolve_from_config('config.ru') if File.exist?('config.ru')
 
       build_default_app
     end
@@ -86,11 +86,13 @@ module Butterscotch
       abort "Cannot load rack to parse #{file}. Install rack."
     end
 
-    def self.resolve_from_appfile(appfile)
-      require File.expand_path(appfile)
+    def self.resolve_from_main(file)
+      require File.expand_path(file)
       return Butterscotch::CLI.app if Butterscotch::CLI.app
 
-      abort 'App file did not set Butterscotch::CLI.app'
+      abort "#{file} must assign Butterscotch::CLI.app"
+    rescue LoadError => e
+      abort "Cannot load #{file}: #{e.message}"
     end
 
     def self.build_default_app

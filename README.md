@@ -24,7 +24,7 @@ gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
 
 Butterscotch provides a tiny Rack-compatible router with a simple, expressive API.
 
-Example `config.ru`:
+Example `main.rb`:
 
 ```ruby
 require 'bundler/setup'
@@ -48,16 +48,26 @@ app.group "/api" do |group|
   end
 end
 
-run app
+app.run
+```
+
+To run the same app with `rackup`, create a minimal `config.ru`:
+
+```ruby
+require_relative 'main'
+run Butterscotch::CLI.app
 ```
 
 Run with butterscotch CLI (Bundler ensures rackup/webrick are available):
 
 ```bash
-# Using a config.ru
+# Default: loads ./main.rb automatically
+bundle exec butterscotch -p 3000 -o 127.0.0.1
+
+# Using an explicit config.ru
 bundle exec butterscotch -c config.ru -p 3000 -o 127.0.0.1
 
-# Or pointing to a Ruby file that sets Butterscotch::CLI.app
+# Or pointing to another Ruby file that calls app.run
 bundle exec butterscotch -f path/to/app.rb
 ```
 
@@ -115,7 +125,7 @@ app.put "/json", JsonHandler      # class is instantiated per request
 
 ### CLI Options
 - `-c, --config FILE`: Load a Rack `config.ru`
-- `-f, --appfile FILE`: Load a Ruby file that sets `Butterscotch::CLI.app`
+- `-f, --appfile FILE`: Load a Ruby file that sets `Butterscotch::CLI.app` (e.g., via `app.run`)
 - `-o, --host HOST`: Bind host (default: `127.0.0.1`)
 - `-p, --port PORT`: Bind port (default: `3000`)
 - `-e, --env ENV`: Rack environment (default: `development`)

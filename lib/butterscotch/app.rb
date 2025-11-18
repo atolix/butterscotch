@@ -64,6 +64,12 @@ module Butterscotch
       group
     end
 
+    def run
+      require_relative 'cli'
+      Butterscotch::CLI.app = self
+      self
+    end
+
     # Register an error handler for a specific exception class (or StandardError by default)
     def error(klass = StandardError, &block)
       raise ArgumentError, 'error handler block required' unless block
