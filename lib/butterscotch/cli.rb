@@ -27,7 +27,7 @@ module Butterscotch
     def self.default_options
       {
         host: ENV.fetch('HOST', '127.0.0.1'),
-        port: (ENV['PORT'] || '9292').to_i,
+        port: (ENV['PORT'] || '3000').to_i,
         env: ENV.fetch('RACK_ENV', 'development'),
         config: nil,
         appfile: nil,
@@ -49,7 +49,7 @@ module Butterscotch
 
     def self.add_runtime_options(opts, options)
       opts.on('-o', '--host HOST', 'Bind host (default: 127.0.0.1)') { |host| options[:host] = host }
-      opts.on('-p', '--port PORT', Integer, 'Bind port (default: 9292)') { |port| options[:port] = port }
+      opts.on('-p', '--port PORT', Integer, 'Bind port (default: 3000)') { |port| options[:port] = port }
       opts.on('-e', '--env ENV', 'RACK_ENV (default: development)') { |env| options[:env] = env }
       opts.on('-c', '--config FILE', 'Rack config.ru to load') { |file| options[:config] = file }
       opts.on('-f', '--appfile FILE', 'Ruby file that sets Butterscotch::CLI.app') { |file| options[:appfile] = file }

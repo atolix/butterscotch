@@ -55,7 +55,7 @@ Run with butterscotch CLI (Bundler ensures rackup/webrick are available):
 
 ```bash
 # Using a config.ru
-bundle exec butterscotch -c config.ru -p 9292 -o 127.0.0.1
+bundle exec butterscotch -c config.ru -p 3000 -o 127.0.0.1
 
 # Or pointing to a Ruby file that sets Butterscotch::CLI.app
 bundle exec butterscotch -f path/to/app.rb
@@ -117,7 +117,7 @@ app.put "/json", JsonHandler      # class is instantiated per request
 - `-c, --config FILE`: Load a Rack `config.ru`
 - `-f, --appfile FILE`: Load a Ruby file that sets `Butterscotch::CLI.app`
 - `-o, --host HOST`: Bind host (default: `127.0.0.1`)
-- `-p, --port PORT`: Bind port (default: `9292`)
+- `-p, --port PORT`: Bind port (default: `3000`)
 - `-e, --env ENV`: Rack environment (default: `development`)
 - `-s, --server NAME`: Rack server (default: `webrick` if available)
 - `-v, --version`: Print version
