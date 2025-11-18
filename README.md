@@ -94,7 +94,6 @@ Notes:
 - `redirect(location, status: 302, headers: {})`: Redirect helper
 - `halt(code = nil, body = nil, headers: {})`: Immediately stop and return given response
 - `request_header(name)`: Read request header (e.g. `HTTP_X_REQUEST_ID`)
-- `set_header(key, value)`: Alias of `header` (does not return Rack response)
 
 ### Handlers
 Besides blocks, you can pass handler objects or classes that implement `#call`.

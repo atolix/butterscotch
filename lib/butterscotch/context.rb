@@ -46,11 +46,6 @@ module Butterscotch
       @resp_headers
     end
 
-    # Back-compat method name; now just sets a header
-    def set_header(key, value)
-      header(key, value)
-    end
-
     def text(body, status: nil, headers: {})
       effective_status = status || @status
       effective_headers = {
