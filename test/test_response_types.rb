@@ -7,7 +7,7 @@ class TestResponseTypes < Minitest::Test
   def rack(app) = Rack::MockRequest.new(app)
 
   def test_text_helper
-    app = Butterscotch::App.new
+    app = Silk::App.new
     app.get '/' do |context|
       context.text 'ok'
     end
@@ -18,7 +18,7 @@ class TestResponseTypes < Minitest::Test
   end
 
   def test_json_helper
-    app = Butterscotch::App.new
+    app = Silk::App.new
     app.get '/json' do |context|
       context.json({ ok: true })
     end
@@ -29,7 +29,7 @@ class TestResponseTypes < Minitest::Test
   end
 
   def test_plain_string_return_normalized
-    app = Butterscotch::App.new
+    app = Silk::App.new
     app.get '/plain' do
       'ok'
     end

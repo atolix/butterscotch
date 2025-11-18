@@ -5,7 +5,7 @@ require 'rack'
 require_relative 'routing_dsl'
 require_relative 'error_handlers'
 
-module Butterscotch
+module Silk
   # Rack-compatible application that wires the router,
   # runs handlers, and applies error/HEAD handling.
   class App
@@ -40,7 +40,7 @@ module Butterscotch
         rescue Halt => e
           response = [e.status, e.headers, e.body]
         rescue StandardError => e
-          env['butterscotch.error'] = e
+      env['silk.error'] = e
           response = handle_error(e, env, params)
         end
       else
@@ -54,7 +54,7 @@ module Butterscotch
 
     def run
       require_relative 'cli'
-      Butterscotch::CLI.app = self
+      Silk::CLI.app = self
       self
     end
   end

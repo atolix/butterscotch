@@ -1,8 +1,8 @@
-# Butterscotch
+# Silk
 
 TODO: Delete this and the text below, and describe your gem
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/butterscotch`. To experiment with that code, run `bin/console` for an interactive prompt.
+Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/silk`. To experiment with that code, run `bin/console` for an interactive prompt.
 
 ## Installation
 
@@ -22,17 +22,17 @@ gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
 
 ## Usage
 
-Butterscotch provides a tiny Rack-compatible router with a simple, expressive API.
+Silk provides a tiny Rack-compatible router with a simple, expressive API.
 
 Example `main.rb`:
 
 ```ruby
 require 'bundler/setup'
-require 'butterscotch'
+require 'silk'
 
 # Either works
-# app = Butterscotch::App.new
-app = Butterscotch.new
+# app = Silk::App.new
+app = Silk.new
 
 app.get "/" do |context|
   context.text "hello"
@@ -55,20 +55,20 @@ To run the same app with `rackup`, create a minimal `config.ru`:
 
 ```ruby
 require_relative 'main'
-run Butterscotch::CLI.app
+run Silk::CLI.app
 ```
 
-Run with butterscotch CLI (Bundler ensures rackup/webrick are available):
+Run with silk CLI (Bundler ensures rackup/webrick are available):
 
 ```bash
 # Default: loads ./main.rb automatically
-bundle exec butterscotch -p 3000 -o 127.0.0.1
+bundle exec silk -p 3000 -o 127.0.0.1
 
 # Using an explicit config.ru
-bundle exec butterscotch -c config.ru -p 3000 -o 127.0.0.1
+bundle exec silk -c config.ru -p 3000 -o 127.0.0.1
 
 # Or pointing to another Ruby file that calls app.run
-bundle exec butterscotch -f path/to/app.rb
+bundle exec silk -f path/to/app.rb
 ```
 
 Notes:
@@ -125,7 +125,7 @@ app.put "/json", JsonHandler      # class is instantiated per request
 
 ### CLI Options
 - `-c, --config FILE`: Load a Rack `config.ru`
-- `-f, --appfile FILE`: Load a Ruby file that sets `Butterscotch::CLI.app` (e.g., via `app.run`)
+- `-f, --appfile FILE`: Load a Ruby file that sets `Silk::CLI.app` (e.g., via `app.run`)
 - `-o, --host HOST`: Bind host (default: `127.0.0.1`)
 - `-p, --port PORT`: Bind port (default: `3000`)
 - `-e, --env ENV`: Rack environment (default: `development`)
@@ -147,7 +147,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/butterscotch. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/butterscotch/blob/master/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/silk. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/silk/blob/master/CODE_OF_CONDUCT.md).
 
 ## License
 
@@ -155,4 +155,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the Butterscotch project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/butterscotch/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the Silk project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/silk/blob/master/CODE_OF_CONDUCT.md).

@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require 'butterscotch/cli'
+require 'silk/cli'
 require 'tmpdir'
 
 class TestCLI < Minitest::Test
   def test_default_port_is_3000
     original_port = ENV.delete('PORT')
-    defaults = Butterscotch::CLI.default_options
+    defaults = Silk::CLI.default_options
     assert_equal 3000, defaults[:port]
   ensure
     ENV['PORT'] = original_port if original_port
@@ -18,29 +18,29 @@ class TestCLI < Minitest::Test
       lib_path = File.expand_path('../lib', __dir__)
       File.write(File.join(dir, 'main.rb'), <<~RUBY)
         $LOAD_PATH.unshift("#{lib_path}") unless $LOAD_PATH.include?("#{lib_path}")
-        require 'butterscotch'
+        require 'silk'
 
-        app = Butterscotch.new
-        Butterscotch::CLI.app = app
+        app = Silk.new
+        Silk::CLI.app = app
       RUBY
 
-      original_app = Butterscotch::CLI.app
+      original_app = Silk::CLI.app
       Dir.chdir(dir) do
-        Butterscotch::CLI.app = nil
-        app = Butterscotch::CLI.resolve_app(Butterscotch::CLI.default_options)
-        assert_instance_of Butterscotch::App, app
+        Silk::CLI.app = nil
+        app = Silk::CLI.resolve_app(Silk::CLI.default_options)
+        assert_instance_of Silk::App, app
       end
-      Butterscotch::CLI.app = original_app
+      Silk::CLI.app = original_app
     end
   end
 
   def test_app_run_assigns_cli_app
-    original_app = Butterscotch::CLI.app
-    app = Butterscotch::App.new
-    Butterscotch::CLI.app = nil
+    original_app = Silk::CLI.app
+    app = Silk::App.new
+    Silk::CLI.app = nil
     app.run
-    assert_equal app, Butterscotch::CLI.app
+    assert_equal app, Silk::CLI.app
   ensure
-    Butterscotch::CLI.app = original_app
+    Silk::CLI.app = original_app
   end
 end

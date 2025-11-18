@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Butterscotch
+module Silk
   # Response helpers for normalizing handler return values,
   # building common responses, and adapting to HEAD.
   module Response

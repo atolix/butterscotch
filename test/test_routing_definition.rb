@@ -7,7 +7,7 @@ class TestRoutingDefinition < Minitest::Test
   def rack(app) = Rack::MockRequest.new(app)
 
   def test_root_route_text
-    app = Butterscotch::App.new
+    app = Silk::App.new
     app.get '/' do |context|
       context.text 'hi'
     end
@@ -17,7 +17,7 @@ class TestRoutingDefinition < Minitest::Test
   end
 
   def test_path_params
-    app = Butterscotch::App.new
+    app = Silk::App.new
     app.get '/hello/:name' do |context|
       context.text "Hello, #{context.params['name']}!"
     end
@@ -27,7 +27,7 @@ class TestRoutingDefinition < Minitest::Test
   end
 
   def test_grouping_with_prefix
-    app = Butterscotch::App.new
+    app = Silk::App.new
     app.group '/api' do |g|
       g.get '/ping' do |context|
         context.text 'pong'
@@ -39,7 +39,7 @@ class TestRoutingDefinition < Minitest::Test
   end
 
   def test_not_found_returns_404
-    app = Butterscotch::App.new
+    app = Silk::App.new
     res = rack(app).get('/missing')
     assert_equal 404, res.status
   end

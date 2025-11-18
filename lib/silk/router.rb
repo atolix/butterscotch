@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Butterscotch
+module Silk
   # Internal route descriptor used by Router
   Route = Struct.new(:method, :pattern, :keys, :handler)
 

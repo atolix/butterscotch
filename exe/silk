@@ -7,7 +7,7 @@ rescue LoadError
   # ignore
 end
 
-require 'butterscotch'
-require 'butterscotch/cli'
+require 'silk'
+require 'silk/cli'
 
-Butterscotch::CLI.start(ARGV)
+Silk::CLI.start(ARGV)

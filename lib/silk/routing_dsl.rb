@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Butterscotch
+module Silk
   # Shared routing helpers used by App and nested groups.
   module RoutingDSL
     ROUTE_METHODS = %i[get post put patch delete options head trace].freeze

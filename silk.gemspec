@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative 'lib/butterscotch/version'
+require_relative 'lib/silk/version'
 
 Gem::Specification.new do |spec|
-  spec.name = 'butterscotch'
-  spec.version = Butterscotch::VERSION
+  spec.name = 'silk'
+  spec.version = Silk::VERSION
   spec.authors = ['atolix']
   spec.email = ['82761106+atolix@users.noreply.github.com']
 

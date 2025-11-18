@@ -2,4 +2,4 @@
 # frozen_string_literal: true
 
 # Dev wrapper to run the gem's CLI from the workspace
-load File.expand_path('../exe/butterscotch', __dir__)
+load File.expand_path('../exe/silk', __dir__)

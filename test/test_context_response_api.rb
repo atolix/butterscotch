@@ -7,7 +7,7 @@ class TestContextResponseApi < Minitest::Test
   def rack(app) = Rack::MockRequest.new(app)
 
   def test_status_and_header_are_applied
-    app = Butterscotch::App.new
+    app = Silk::App.new
     app.get '/x' do |context|
       context.status 201
       context.header 'X-Foo', 'bar'
@@ -20,7 +20,7 @@ class TestContextResponseApi < Minitest::Test
   end
 
   def test_headers_bulk_merge
-    app = Butterscotch::App.new
+    app = Silk::App.new
     app.get '/y' do |context|
       context.headers 'X-A' => '1', 'X-B' => '2'
       context.json({ ok: true })
@@ -32,7 +32,7 @@ class TestContextResponseApi < Minitest::Test
   end
 
   def test_redirect_helper
-    app = Butterscotch::App.new
+    app = Silk::App.new
     app.get '/r' do |context|
       context.redirect '/dest'
     end
@@ -43,7 +43,7 @@ class TestContextResponseApi < Minitest::Test
   end
 
   def test_halt_stops_and_returns_given_status_and_body
-    app = Butterscotch::App.new
+    app = Silk::App.new
     app.get '/h' do |context|
       context.halt 418, 'nope', headers: { 'X-Stop' => '1' }
       context.text 'unreachable'
@@ -55,7 +55,7 @@ class TestContextResponseApi < Minitest::Test
   end
 
   def test_request_header_reader
-    app = Butterscotch::App.new
+    app = Silk::App.new
     app.get '/hdr' do |context|
       v = context.request_header('HTTP_X_TEST')
       context.text(v.to_s)

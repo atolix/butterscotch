@@ -7,7 +7,7 @@ class TestErrorHandling < Minitest::Test
   def rack(app) = Rack::MockRequest.new(app)
 
   def test_default_500_when_no_handler
-    app = Butterscotch::App.new
+    app = Silk::App.new
     app.get '/boom' do |_context|
       raise 'fail'
     end
@@ -17,7 +17,7 @@ class TestErrorHandling < Minitest::Test
   end
 
   def test_custom_error_handler_for_standard_error
-    app = Butterscotch::App.new
+    app = Silk::App.new
     app.error(StandardError) do |error, context|
       context.json({ error: error.message })
     end
@@ -30,7 +30,7 @@ class TestErrorHandling < Minitest::Test
   end
 
   def test_more_specific_handler_is_chosen
-    app = Butterscotch::App.new
+    app = Silk::App.new
     app.error(StandardError) { |error, context| context.text "std: #{error.class}" }
     app.error(ArgumentError) { |error, context| context.text "arg: #{error.class}" }
     app.get '/boom' do |_context|
@@ -42,7 +42,7 @@ class TestErrorHandling < Minitest::Test
   end
 
   def test_custom_not_found_handler
-    app = Butterscotch::App.new
+    app = Silk::App.new
     app.not_found { |context| context.text 'nah' }
     res = rack(app).get('/missing')
     assert_equal 200, res.status

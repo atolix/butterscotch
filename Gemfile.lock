@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    butterscotch (0.1.0)
+    silk (0.1.0)
       rack (>= 3.0)
       rackup (>= 2.1)
       webrick (>= 1.8)
@@ -21,9 +21,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  butterscotch!
   minitest (~> 5.16)
   rake (~> 13.0)
+  silk!
 
 BUNDLED WITH
    2.6.2

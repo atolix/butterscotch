@@ -2,8 +2,8 @@
 
 require 'optparse'
 
-module Butterscotch
-  # CLI entrypoint to run Butterscotch apps without rackup.
+module Silk
+  # CLI entrypoint to run Silk apps without rackup.
   # Provides config/appfile loading and server bootstrap.
   module CLI
     class << self
@@ -44,7 +44,7 @@ module Butterscotch
     end
 
     def self.configure_banner(opts)
-      opts.banner = 'Usage: butterscotch [options]'
+      opts.banner = 'Usage: silk [options]'
     end
 
     def self.add_runtime_options(opts, options)
@@ -52,13 +52,13 @@ module Butterscotch
       opts.on('-p', '--port PORT', Integer, 'Bind port (default: 3000)') { |port| options[:port] = port }
       opts.on('-e', '--env ENV', 'RACK_ENV (default: development)') { |env| options[:env] = env }
       opts.on('-c', '--config FILE', 'Rack config.ru to load') { |file| options[:config] = file }
-      opts.on('-f', '--appfile FILE', 'Ruby file that sets Butterscotch::CLI.app') { |file| options[:appfile] = file }
+      opts.on('-f', '--appfile FILE', 'Ruby file that sets Silk::CLI.app') { |file| options[:appfile] = file }
       opts.on('-s', '--server NAME', 'Rack server (default: webrick)') { |name| options[:server] = name }
     end
 
     def self.add_meta_options(opts)
       opts.on('-v', '--version', 'Print version') do
-        puts Butterscotch::VERSION
+        puts Silk::VERSION
         exit 0
       end
       opts.on('-h', '--help', 'Show help') do
@@ -88,16 +88,16 @@ module Butterscotch
 
     def self.resolve_from_main(file)
       require File.expand_path(file)
-      return Butterscotch::CLI.app if Butterscotch::CLI.app
+      return Silk::CLI.app if Silk::CLI.app
 
-      abort "#{file} must assign Butterscotch::CLI.app"
+      abort "#{file} must assign Silk::CLI.app"
     rescue LoadError => e
       abort "Cannot load #{file}: #{e.message}"
     end
 
     def self.build_default_app
-      default = Butterscotch.new
-      default.get('/') { |context| context.text 'butterscotch up' }
+      default = Silk.new
+      default.get('/') { |context| context.text 'silk up' }
       default
     end
 

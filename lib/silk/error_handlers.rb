@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Butterscotch
+module Silk
   # Shared helpers for registering and invoking error/not-found handlers.
   module ErrorHandlers
     def error(klass = StandardError, &block)

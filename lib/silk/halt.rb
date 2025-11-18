@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Butterscotch
+module Silk
   # Control-flow exception used to stop processing and
   # immediately return a specific Rack response.
   class Halt < StandardError

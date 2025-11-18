@@ -3,7 +3,7 @@
 require 'json'
 require 'rack'
 
-module Butterscotch
+module Silk
   # Per-request context: wraps Rack::Request and route params,
   # and provides helpers to build responses.
   class Context
