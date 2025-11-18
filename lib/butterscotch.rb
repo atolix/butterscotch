@@ -3,6 +3,7 @@
 require_relative 'butterscotch/version'
 require_relative 'butterscotch/context'
 require_relative 'butterscotch/router'
+require_relative 'butterscotch/routing_dsl'
 require_relative 'butterscotch/halt'
 require_relative 'butterscotch/response'
 require_relative 'butterscotch/app'

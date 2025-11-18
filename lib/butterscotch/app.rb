@@ -2,10 +2,13 @@
 
 require 'rack'
 
+require_relative 'routing_dsl'
+
 module Butterscotch
   # Rack-compatible application that wires the router,
   # runs handlers, and applies error/HEAD handling.
   class App
+    include RoutingDSL
     attr_reader :router
 
     def initialize
@@ -48,22 +51,6 @@ module Butterscotch
       response
     end
 
-    %i[get post put patch delete options head trace].each do |method_name|
-      define_method(method_name) do |path, handler = nil, &block|
-        @router.add(method_name, path, handler, &block)
-      end
-    end
-
-    def any(path, &block)
-      Router::HTTP_METHODS.each { |m| @router.add(m, path, &block) }
-    end
-
-    def group(prefix)
-      group = Group.new(self, prefix)
-      yield group if block_given?
-      group
-    end
-
     def run
       require_relative 'cli'
       Butterscotch::CLI.app = self
@@ -84,43 +71,6 @@ module Butterscotch
 
       @not_found_handler = block
       self
-    end
-
-    # A grouping helper
-    class Group
-      def initialize(app, prefix)
-        @app = app
-        @prefix = normalize_prefix(prefix)
-      end
-
-      %i[get post put patch delete options head trace any].each do |http_method|
-        define_method(http_method) do |path, handler = nil, &block|
-          full = join(@prefix, path)
-          @app.public_send(http_method, full, handler, &block)
-        end
-      end
-
-      def group(prefix)
-        nested = self.class.new(@app, join(@prefix, prefix))
-        yield nested if block_given?
-        nested
-      end
-
-      private
-
-      def join(prefix, path)
-        prefix = '/' if prefix.nil? || prefix.empty?
-        path = path.to_s
-        return prefix if path.empty? || path == '/'
-
-        (prefix.end_with?('/') ? prefix.chop : prefix) + (path.start_with?('/') ? path : "/#{path}")
-      end
-
-      def normalize_prefix(prefix)
-        return '/' if prefix.nil? || prefix.empty?
-
-        prefix.start_with?('/') ? prefix : "/#{prefix}"
-      end
     end
 
     private
