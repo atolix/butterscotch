@@ -44,7 +44,7 @@ end
 
 app.group "/api" do |group|
   group.get "/ping" do |context|
-    context.json ok: true, ip: context.ip
+    context.json({ ok: true, ip: context.ip })
   end
 end
 
@@ -82,18 +82,19 @@ Notes:
 - HEAD: Uses matching `GET` route, returns empty body and sets `Content-Length` when possible.
 
 ### Context API
-- `req`: Rack request object (`Rack::Request`)
-- `params`: Path parameters hash
-- `ip`: Client IP
-- `status(code)`: Set response status (default 200)
-- `header(key, value)`: Set a response header; `header(key)` to get
-- `headers(hash)`: Merge multiple headers; returns current headers
-- `text(body, status: nil, headers: {})`: Return plain text
-- `html(body, status: nil, headers: {})`: Return HTML
-- `json(obj = nil, status: nil, headers: {}, **kw)`: Return JSON
-- `redirect(location, status: 302, headers: {})`: Redirect helper
-- `halt(code = nil, body = nil, headers: {})`: Immediately stop and return given response
-- `request_header(name)`: Read request header (e.g. `HTTP_X_REQUEST_ID`)
+- Request helpers
+  - `req`: Rack request object (`Rack::Request`)
+  - `params`: Path parameters hash
+  - `ip`: Client IP
+  - `request_header(name)`: Read request header (e.g. `HTTP_X_REQUEST_ID`)
+- Response helpers
+  - `status(code)`: Set response status (default 200)
+  - `header(key, value)` / `headers(hash)`: Set response headers
+  - `text(body, status: nil, headers: {})`: Return plain text
+  - `html(body, status: nil, headers: {})`: Return HTML
+  - `json(obj = nil, status: nil, headers: {}, **kw)`: Return JSON
+  - `redirect(location, status: 302, headers: {})`: Redirect helper
+  - `halt(code = nil, body = nil, headers: {})`: Immediately stop and return given response
 
 ### Handlers
 Besides blocks, you can pass handler objects or classes that implement `#call`.
@@ -113,7 +114,7 @@ end
 
 class JsonHandler
   def call(context)
-    context.json ok: true
+    context.json({ ok: true })
   end
 end
 

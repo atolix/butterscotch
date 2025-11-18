@@ -20,7 +20,7 @@ class TestResponseTypes < Minitest::Test
   def test_json_helper
     app = Butterscotch::App.new
     app.get '/json' do |context|
-      context.json ok: true
+      context.json({ ok: true })
     end
     res = rack(app).get('/json')
     assert_equal 200, res.status

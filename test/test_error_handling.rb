@@ -19,7 +19,7 @@ class TestErrorHandling < Minitest::Test
   def test_custom_error_handler_for_standard_error
     app = Butterscotch::App.new
     app.error(StandardError) do |error, context|
-      context.json error: error.message
+      context.json({ error: error.message })
     end
     app.get '/boom' do |_context|
       raise 'bad'

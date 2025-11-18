@@ -20,7 +20,7 @@ class TestHandlerObjects < Minitest::Test
 
   class KlassHandler
     def call(context)
-      context.json ok: true
+      context.json({ ok: true })
     end
   end
 

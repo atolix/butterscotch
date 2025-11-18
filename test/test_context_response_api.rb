@@ -23,7 +23,7 @@ class TestContextResponseApi < Minitest::Test
     app = Butterscotch::App.new
     app.get '/y' do |context|
       context.headers 'X-A' => '1', 'X-B' => '2'
-      context.json ok: true
+      context.json({ ok: true })
     end
     res = rack(app).get('/y')
     assert_equal '1', res['X-A']
