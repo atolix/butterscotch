@@ -7,7 +7,6 @@ require_relative 'butterscotch/halt'
 require_relative 'butterscotch/response'
 require_relative 'butterscotch/app'
 
-# rubocop:disable Style/Documentation
 module Butterscotch
   class Error < StandardError; end
 
@@ -16,4 +15,3 @@ module Butterscotch
     App.new
   end
 end
-# rubocop:enable Style/Documentation

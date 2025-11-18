@@ -15,7 +15,6 @@ module Butterscotch
     end
 
     # Rack interface
-    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def call(env)
       request = Rack::Request.new(env)
       method = request.request_method
@@ -48,7 +47,6 @@ module Butterscotch
 
       response
     end
-    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     %i[get post put patch delete options head trace].each do |method_name|
       define_method(method_name) do |path, handler = nil, &block|

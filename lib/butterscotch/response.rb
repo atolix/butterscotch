@@ -46,7 +46,6 @@ module Butterscotch
       newh
     end
 
-    # rubocop:disable Metrics/MethodLength
     def body_length(body)
       return nil unless body.respond_to?(:each)
 
@@ -62,6 +61,5 @@ module Butterscotch
       end
       total
     end
-    # rubocop:enable Metrics/MethodLength
   end
 end

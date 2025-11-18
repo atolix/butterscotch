@@ -2,7 +2,7 @@
 
 module Butterscotch
   # Internal route descriptor used by Router
-  Route = Struct.new(:method, :pattern, :keys, :handler) # rubocop:disable Lint/StructNewOverride
+  Route = Struct.new(:method, :pattern, :keys, :handler)
 
   # Minimal HTTP router with path params and basic matching.
   class Router
@@ -22,7 +22,6 @@ module Butterscotch
       self
     end
 
-    # rubocop:disable Metrics/MethodLength
     def match(method, path)
       method = normalize_method(method)
       candidates = @routes[method]
@@ -31,14 +30,13 @@ module Butterscotch
         next unless match_data
 
         params = {}
-        route.keys.each do |key| # rubocop:disable Style/HashEachMethods
+        route.keys.each do |key|
           params[key] = match_data[key] if match_data.names.include?(key)
         end
         return [route, params]
       end
       nil
     end
-    # rubocop:enable Metrics/MethodLength
 
     private
 
@@ -53,7 +51,6 @@ module Butterscotch
     #  - :name   => single segment [^/]+
     #  - *splat  => greedy match .*
     #  - trailing slash tolerance
-    # rubocop:disable Metrics/MethodLength
     def compile(path)
       raise ArgumentError, 'path must start with /' unless path.start_with?('/')
 
@@ -76,6 +73,5 @@ module Butterscotch
 
       [%r{^#{pattern}/?$}, keys]
     end
-    # rubocop:enable Metrics/MethodLength
   end
 end
